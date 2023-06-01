@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import axiosClient from "../axios-client"
 import { useStateContext } from "../contexts/ContextProvider"
 
@@ -9,7 +9,9 @@ export default function Signup() {
     const passwordRef = useRef()
     const passwordConfirmationRef = useRef()
 
-    const {setUser, setToken} = useStateContext()
+    const [errors, setErrors] = useState(null)
+
+    const { setUser, setToken } = useStateContext()
 
     const onSubmit = (ev) => {
         ev.preventDefault()
@@ -20,16 +22,16 @@ export default function Signup() {
             password_confirmation: passwordConfirmationRef.current.value
         }
         axiosClient.post('/signup', payload)
-        .then(({data}) => {
-            setToken(data.token)
-            setUser(data.user)
-        })
-        .catch(err => {
-            const response = err.response
-            if(response && response.status == 422) {
-                console.log(response.data.errors)
-            }
-        })
+            .then(({ data }) => {
+                setToken(data.token)
+                setUser(data.user)
+            })
+            .catch(err => {
+                const response = err.response
+                if (response && response.status == 422) {
+                    setErrors(response.data.errors)
+                }
+            })
     }
 
     return (
@@ -39,16 +41,21 @@ export default function Signup() {
                     <h1 className="title">
                         Signup
                     </h1>
-                    <input ref={nameRef} placeholder="Full Name"/>
-                    <input ref={emailRef} type="email" placeholder="Email Address"/>
-                    <input ref={passwordRef} type="password" placeholder="Password"/>
-                    <input ref={passwordConfirmationRef} type="password" placeholder="Password Confirmation"/>
+                    {errors && <div className="alert">
+                        {Object.keys(errors).map(key =>
+                            (<p key={key}>{errors[key][0]}</p>))}
+                    </div>
+                    }
+                    <input ref={nameRef} placeholder="Full Name" />
+                    <input ref={emailRef} type="email" placeholder="Email Address" />
+                    <input ref={passwordRef} type="password" placeholder="Password" />
+                    <input ref={passwordConfirmationRef} type="password" placeholder="Password Confirmation" />
                     <button className="btn btn-block">Signup</button>
                     <p className="message">
                         Already Registered? <Link to="/login">Sign in</Link>
                     </p>
                 </form>
             </div>
-    </div>
+        </div>
     )
 }
