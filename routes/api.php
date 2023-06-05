@@ -3,7 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Resources\ListingResource;
+use App\Models\Listing;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +25,7 @@ Route::middleware('auth:sanctum')->group(function (){
     });
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::apiResource('/users', UserController::class);
+    Route::apiResource('/dashboard', ListingController::class);
 });
 
 Route::post('/signup', [AuthController::class, 'signup']);
